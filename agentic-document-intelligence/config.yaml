@@ -1,0 +1,79 @@
+# Agentic Document Intelligence System Configuration
+system:
+  name: "Agentic Document Intelligence System"
+  version: "1.0.0"
+  description: "Multi-agent AI system for autonomous document processing and analysis"
+
+# Google ADK Configuration
+google_adk:
+  project_id: "your-google-cloud-project"
+  location: "us-central1"
+  api_key_env: "GOOGLE_API_KEY"
+  
+# Gemini Model Configuration  
+gemini:
+  model: "gemini-1.5-pro"
+  temperature: 0.3
+  max_output_tokens: 8192
+  safety_settings:
+    - category: "HARM_CATEGORY_HARASSMENT"
+      threshold: "BLOCK_MEDIUM_AND_ABOVE"
+    - category: "HARM_CATEGORY_HATE_SPEECH"
+      threshold: "BLOCK_MEDIUM_AND_ABOVE"
+
+# Agent Configuration
+agents:
+  ingestion_agent:
+    name: "DocumentIngestionAgent"
+    description: "Processes and extracts content from PDF documents"
+    max_concurrent_documents: 5
+    supported_formats: ["pdf", "docx", "txt"]
+    
+  analysis_agent:
+    name: "DocumentAnalysisAgent"
+    description: "Performs deep content analysis and entity extraction"
+    analysis_depth: "comprehensive"
+    entity_types: ["PERSON", "ORGANIZATION", "DATE", "LOCATION", "CONCEPT"]
+    
+  reasoning_agent:
+    name: "ReasoningAgent"
+    description: "Synthesizes information and draws insights across documents"
+    reasoning_model: "gemini-1.5-pro"
+    confidence_threshold: 0.7
+    
+  response_agent:
+    name: "ResponseAgent"
+    description: "Generates structured responses with citations"
+    output_format: "json"
+    include_citations: true
+    max_response_length: 2048
+
+# Vector Database Configuration
+vector_db:
+  provider: "chromadb"
+  collection_name: "document_intelligence"
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  chunk_size: 1000
+  chunk_overlap: 200
+
+# Output Configuration
+output:
+  reports_dir: "output/reports"
+  logs_dir: "logs"
+  citations_format: "apa"
+  relationship_maps: true
+
+# Processing Configuration
+processing:
+  batch_size: 10
+  max_file_size_mb: 100
+  timeout_seconds: 300
+  parallel_processing: true
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/system.log"
+  max_size_mb: 10
+  backup_count: 5
