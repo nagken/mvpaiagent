@@ -9,7 +9,7 @@ A production-ready demonstration of how to build intelligent product classificat
 This MVP demonstrates an enterprise-grade AI system that automatically classifies products into catalog taxonomy by:
 
 1. **Semantic Retrieval**: Finding similar products using FAISS vector search
-2. **LLM Classification**: Using GPT/Gemini to predict classification codes
+2. **LLM Classification**: Using GPT to predict classification codes
 3. **Validation**: Ensuring predictions meet business constraints
 4. **Feedback Loops**: Continuous learning and monitoring
 
@@ -47,7 +47,8 @@ This MVP demonstrates an enterprise-grade AI system that automatically classifie
 
 ```bash
 # Clone and navigate to project
-cd ai_classification_mvp
+git clone https://github.com/nagken/mvpaiagent.git
+cd mvpaiagent
 
 # Install dependencies
 pip install -r requirements.txt
@@ -56,7 +57,7 @@ pip install -r requirements.txt
 export OPENAI_API_KEY="your_api_key_here"
 
 # Run the interactive demo
-python orchestrator.py
+python demo.py
 ```
 
 ### API Server Mode
@@ -74,7 +75,7 @@ curl -X POST http://localhost:8000/classify \
 ## Project Structure
 
 ```
-ai_classification_mvp/
+mvpaiagent/
 ├── agents/                 # Multi-agent modules
 │   ├── __init__.py
 │   ├── ingestion_agent.py   # Data loading
@@ -94,6 +95,7 @@ ai_classification_mvp/
 ├── requirements.txt       # Python dependencies
 ├── main.py                # FastAPI server
 ├── orchestrator.py        # Interactive demo
+├── demo.py                # Quick start script
 └── README.md              # This file
 ```
 
@@ -128,11 +130,14 @@ The system includes 20 sample products across categories:
 ### Interactive Demo
 
 ```bash
-python orchestrator.py
+python demo.py
 ```
 
 Example session:
 ```
+AI Product Classification MVP - Quick Demo
+==================================================
+
 Product description: Apple MacBook Pro 16-inch M2 Max
 Executing: IngestionAgent
     IngestionAgent completed successfully
@@ -173,16 +178,6 @@ POST /classify
 }
 ```
 
-**Submit Feedback:**
-```bash
-POST /feedback
-{
-  "session_id": "session_20241110_143052_a1b2c3d4",
-  "rating": 5,
-  "comments": "Perfect classification!"
-}
-```
-
 ### Python Integration
 
 ```python
@@ -195,7 +190,7 @@ classifier = ClassifierAgent("gpt-3.5-turbo")
 
 # Classify a product
 similar = store.search("iPad Pro 12.9 inch tablet", k=3)
-prediction = classifier.run("iPad Pro 12.9 inch", context)
+prediction = classifier.run("iPad Pro 12.9 inch", similar)
 ```
 
 ## API Endpoints
@@ -207,57 +202,43 @@ prediction = classifier.run("iPad Pro 12.9 inch", context)
 | `/feedback` | POST | Submit user feedback |
 | `/health` | GET | System health check |
 | `/stats` | GET | Performance statistics |
-| `/catalog/codes` | GET | Valid classification codes |
-
-## Monitoring & Analytics
-
-### Logs Analysis
-```bash
-# View recent logs
-tail -f logs/agent_logs.jsonl
-
-# Get stats via API
-curl http://localhost:8000/stats
-```
-
-### Performance Metrics
-- **Retrieval Accuracy**: Similarity scores and relevance
-- **Classification Confidence**: LLM prediction confidence
-- **Validation Success**: Rate of constraint compliance
-- **User Feedback**: Ratings and corrections
 
 ## Testing
 
-### Unit Tests
+### Quick Test
 ```bash
-python -m pytest tests/
+# Run demo with sample data
+python demo.py
+
+# Test specific product
+python orchestrator.py "Dell XPS 13 laptop with 16GB RAM"
+
+# Test API server
+python main.py
+# Then visit http://localhost:8000/docs for interactive API testing
 ```
 
-### Load Testing
-```bash
-# Test API performance
-ab -n 100 -c 10 -T 'application/json' \
-   -p test_payload.json \
-   http://localhost:8000/classify
-```
+### Sample Test Cases
 
-### Example Test Cases
 - Electronics (laptops, monitors, accessories)
-- Networking equipment (routers, switches)
+- Networking equipment (routers, switches)  
 - Storage devices (SSDs, USB drives)
 - Gaming hardware (GPUs, peripherals)
 
-## Security & Compliance
+## Features
 
-- **API Keys**: Store in environment variables
-- **Input Validation**: Pydantic models validate all inputs
-- **Error Handling**: Graceful degradation and logging
-- **Rate Limiting**: Configure via FastAPI middleware
-- **Audit Trail**: Complete classification logs
+- **Multi-Agent Architecture**: 5 specialized agents working together
+- **Semantic Search**: FAISS vector database with OpenAI embeddings
+- **LLM Classification**: GPT-based product categorization
+- **Business Validation**: Rule-based constraint checking
+- **Audit Logging**: Complete classification audit trail
+- **REST API**: Production-ready FastAPI server
+- **Interactive Demo**: Visual workflow execution
+- **Sample Data**: 20 pre-loaded test products
 
 ## Production Deployment
 
-### Docker Deployment
+### Docker Example
 ```dockerfile
 FROM python:3.11-slim
 COPY . /app
@@ -267,25 +248,25 @@ EXPOSE 8000
 CMD ["python", "main.py"]
 ```
 
-### Cloud Deployment (GCP/Azure/AWS)
-1. **Vector Store**: Use managed vector databases (Pinecone, Vertex AI)
-2. **LLM**: Switch to hosted models (Vertex AI, Azure OpenAI)  
-3. **Monitoring**: Integrate with DataDog, New Relic
-4. **Scaling**: Use container orchestration (Kubernetes, Cloud Run)
+### Environment Setup
+```bash
+# Set required environment variables
+export OPENAI_API_KEY="your_key_here"
 
-### Performance Optimization
-- **Caching**: Redis for frequent classifications
-- **Batch Processing**: Process multiple products simultaneously
-- **Model Optimization**: Use smaller, fine-tuned models
-- **CDN**: Cache static responses
+# Optional: Configure logging
+export LOG_LEVEL="INFO"
+
+# Optional: Use different models
+export LLM_MODEL="gpt-4"
+```
 
 ## Business Value
 
-### Metrics & ROI
-- **Time Savings**: 80% reduction in manual classification time
-- **Accuracy**: 90%+ classification accuracy with validation
-- **Scalability**: Process thousands of products per hour
-- **Consistency**: Eliminate human classification variance
+### Key Benefits
+- **80% faster** product classification vs manual process
+- **90%+ accuracy** with validation layer
+- **Scalable** to thousands of products per hour
+- **Consistent** classification across catalog
 
 ### Use Cases
 - **Product Onboarding**: Automated catalog ingestion
@@ -293,44 +274,13 @@ CMD ["python", "main.py"]
 - **Quality Assurance**: Validation of existing classifications
 - **Supplier Integration**: Standardize vendor product data
 
-## Continuous Improvement
-
-### Feedback Loop
-1. **User Corrections** → Logged feedback
-2. **Performance Analysis** → Weekly metrics review
-3. **Model Updates** → Retrain on corrected data
-4. **A/B Testing** → Compare classification strategies
-
-### Future Enhancements
-- **Multi-language Support**: Classify products in various languages
-- **Image Classification**: Add computer vision for product images
-- **Advanced RAG**: Implement graph-based retrieval
-- **Real-time Learning**: Online model adaptation
-
-## Scaling to Enterprise
-
-### Production Checklist
-- [ ] Load balancing and auto-scaling
-- [ ] Database optimization (PostgreSQL/MongoDB)
-- [ ] Comprehensive monitoring and alerting
-- [ ] CI/CD pipeline with automated testing
-- [ ] Security audit and compliance validation
-- [ ] Multi-environment deployment (dev/staging/prod)
-
-### Integration Patterns
-- **ERP Integration**: SAP, Oracle, Microsoft Dynamics
-- **E-commerce**: Shopify, Magento, WooCommerce
-- **PIM Systems**: Akeneo, Pimcore, Salsify
-- **Webhooks**: Real-time product classification triggers
-
----
-
-## Support & Contact
+## Support
 
 For questions, issues, or enhancements:
 - **Technical Issues**: Check logs in `logs/agent_logs.jsonl`
 - **Performance**: Monitor via `/health` and `/stats` endpoints
 - **Configuration**: Review and update `config.yaml`
+- **Repository**: https://github.com/nagken/mvpaiagent
 
 **Built with dedication for AI Innovation**
  
