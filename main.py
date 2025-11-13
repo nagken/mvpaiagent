@@ -38,6 +38,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Health check endpoint for GCP deployment
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for load balancer and monitoring"""
+    return {"status": "healthy", "service": "MVP Google ADK", "version": "1.0.0"}
+
+# Root endpoint
+@app.get("/")
+async def root():
+    """Root endpoint with service information"""
+    return {
+        "message": "MVP Google ADK - AI Product Classification System",
+        "status": "running",
+        "endpoints": ["/classify", "/feedback", "/health", "/docs"]
+    }
+
 # Global agents (initialized on startup)
 vector_store = None
 agents = {}
